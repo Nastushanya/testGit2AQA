@@ -5,7 +5,9 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 /**
  * Простой тест для метода add класса App.
@@ -53,8 +55,64 @@ class AppTest {
         assertEquals("approved",response.jsonPath().getString("status"),"Неверный статус заказа");
         assertTrue(response.jsonPath().getBoolean("complete"), "Неверный complete");
     }
+
     @Test
-    void createPetOrderTest() {
+    void createPetOrderPositiveTestWithIdNameStatus() {
+        RestAssured.baseURI = "https://petstore.swagger.rv-school.ru/api/v3";
+        String requestBody = """
+                             {
+                                 "id": 1,
+                                 "name": "Buddy",
+                                 "status": "available"
+                               }
+                """;
+        Response response = RestAssured
+                .given()
+                .header("Content-Type","application/json")
+                .body(requestBody)
+                .when()
+                .post("/pet")
+                .then()
+                .extract().response();
+
+        assertEquals(200,response.statusCode(),"Неверный статус код");
+        assertEquals(1,response.jsonPath().getInt("id"),"Неверный id заказа");
+        assertEquals("Buddy",response.jsonPath().getString("name"),"Неверное имя");
+        assertEquals("available",response.jsonPath().getString("status"),"Неверное значение поля status");
+
+    }
+    @Test
+    void createPetOrderPositiveTestWithIdNameStatusUrls() {
+        RestAssured.baseURI = "https://petstore.swagger.rv-school.ru/api/v3";
+        String requestBody = """
+                             {
+                                 "id": 2,
+                                 "name": "Buddy",
+                                 "photoUrls": [
+                                   "string"
+                                 ],
+                                 "status": "available"
+                               }
+                """;
+        Response response = RestAssured
+                .given()
+                .header("Content-Type","application/json")
+                .body(requestBody)
+                .when()
+                .post("/pet")
+                .then()
+                .extract().response();
+
+        assertEquals(200,response.statusCode(),"Неверный статус код");
+        assertEquals(2,response.jsonPath().getInt("id"),"Неверный id заказа");
+        assertEquals("Buddy",response.jsonPath().getString("name"),"Неверное имя");
+        assertEquals(1,response.jsonPath().getList("photoUrls").size(),"Неверное число ссылок на фото");
+        assertTrue(response.jsonPath().getList("photoUrls").contains("string"), "Неверная ссылка на фото");
+        assertEquals("available",response.jsonPath().getString("status"),"Неверное значение поля status");
+
+    }
+    /*@Test
+    void createPetOrderNegativeTest() {
         RestAssured.baseURI = "https://petstore.swagger.rv-school.ru/api/v3";
         String requestBody = """
                               {
@@ -71,10 +129,7 @@ class AppTest {
                 .post("/pet")
                 .then()
                 .extract().response();
-        assertEquals(200,response.statusCode(),"Неверный статус код");
-        assertEquals(1,response.jsonPath().getInt("id"),"Неверный id заказа");
-        assertEquals("Buddy",response.jsonPath().getString("name"),"Неверное имя");
-        assertEquals("available",response.jsonPath().getString("status"),"Неверное значение поля status");
+        assertEquals(400,response.statusCode());
 
-    }
+    }*/
 }
