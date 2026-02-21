@@ -21,7 +21,7 @@ class AppTest {
 
     @Test
     void addReturnsSumOfTwoNumbers1() {
-        assertEquals(-7, App.add(-5, -3));
+        assertEquals(-8, App.add(-5, -3));
     }
 
 
@@ -52,5 +52,29 @@ class AppTest {
         assertEquals(7,response.jsonPath().getInt("quantity"),"Неверный quantity заказа");
         assertEquals("approved",response.jsonPath().getString("status"),"Неверный статус заказа");
         assertTrue(response.jsonPath().getBoolean("complete"), "Неверный complete");
+    }
+    @Test
+    void createPetOrderTest() {
+        RestAssured.baseURI = "https://petstore.swagger.rv-school.ru/api/v3";
+        String requestBody = """
+                              {
+                              id: 1,
+                              name: "Buddy",
+                              status: "available"
+                              }
+                """;
+        Response response = RestAssured
+                .given()
+                .header("Content-Type","application/json")
+                .body(requestBody)
+                .when()
+                .post("/pet")
+                .then()
+                .extract().response();
+        assertEquals(200,response.statusCode(),"Неверный статус код");
+        assertEquals(1,response.jsonPath().getInt("id"),"Неверный id заказа");
+        assertEquals("Buddy",response.jsonPath().getString("name"),"Неверное имя");
+        assertEquals("available",response.jsonPath().getString("status"),"Неверное значение поля status");
+
     }
 }
