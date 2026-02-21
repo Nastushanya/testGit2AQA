@@ -24,15 +24,10 @@ class AppTest {
         assertEquals(-7, App.add(-5, -3));
     }
 
-    @Test
-    void addReturnsSumOfTwoNumbers1() {
-        assertEquals(-7, App.add(-5, -3));
-        assertNotNull();
-    }
 
     @Test
     void createStoreOrderTest() {
-        RestAssured.baseURI = 'https://petstore.swagger.rv-school.ru/api/v3';
+        RestAssured.baseURI = "https://petstore.swagger.rv-school.ru/api/v3";
         String requestBody = """
                               {
                               "id": 10,
@@ -46,9 +41,9 @@ class AppTest {
         Response response = RestAssured
                 .given()
                 .header("Content-Type","application/json")
-                .body(resuestBody)
+                .body(requestBody)
                 .when()
-                .post('/store/order')
+                .post("/store/order")
                 .then()
                 .extract().response();
         assertEquals(200,response.statusCode(),"Неверный статус код");
